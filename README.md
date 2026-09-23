@@ -45,8 +45,7 @@ project/
 
 ## 2) Deploy Backend ที่ Render
 
-1. Push โฟลเดอร์ `server/` (ทั้งโฟลเดอร์นี้) ขึ้น GitHub repo ของคุณ
-   (หรือจะ zip ทั้งโปรเจกต์ไว้ก่อนก็ได้ แต่ Render ต้องดึงจาก Git repo)
+1. Push repository ทั้งโปรเจกต์ขึ้น GitHub (ไม่ต้องแยกโฟลเดอร์)
 2. ไปที่ https://render.com → New → **Web Service** → เชื่อม GitHub repo ที่เพิ่ง push
 3. ตั้งค่า:
    - **Root Directory**: `server`
@@ -83,13 +82,18 @@ window.API_BASE_URL = "https://smart-work-calendar-2027-api.onrender.com";
 
 ## 4) Deploy Frontend ที่ Vercel
 
-1. Push โฟลเดอร์ `client/` ขึ้น GitHub repo (จะอยู่ repo เดียวกับ server หรือแยกก็ได้)
-2. ไปที่ https://vercel.com → New Project → เลือก repo นี้
+1. ไปที่ https://vercel.com → New Project → เลือก repository นี้
 3. ตั้งค่า:
-   - **Root Directory**: `client`
+   - **Root Directory**: `client` (สำคัญมาก เพราะ `index.html` อยู่ในโฟลเดอร์นี้)
    - **Framework Preset**: Other (ไม่ต้อง build ใด ๆ — เป็นไฟล์ static ล้วน)
+   - **Build Command**: เว้นว่าง หรือปิดใช้งาน
+   - **Output Directory**: `.`
 4. กด Deploy จะได้ URL ประมาณ `https://your-project.vercel.app`
 5. **กลับไปที่ Render** → แก้ Environment Variable `CORS_ORIGIN` ให้เป็น URL ของ Vercel นี้ (เช่น `https://your-project.vercel.app`) แล้ว Save จะ Redeploy ให้อัตโนมัติ
+
+> สำหรับ monorepo ให้ตั้งค่าแยกกัน: Vercel ใช้ Root Directory เป็น `client` และไม่มี environment variable ที่จำเป็นสำหรับ frontend ส่วน Render ใช้ Root Directory เป็น `server` และตั้ง `MONGODB_URI`, `JWT_SECRET`, `CORS_ORIGIN`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` ในหน้า Environment ของ Render เท่านั้น
+
+ถ้า Vercel ขึ้น `404 NOT_FOUND` ที่หน้า `/` ให้เข้า **Project Settings → General → Root Directory** แล้วเลือก `client` จากนั้นกด Save และ Redeploy ใหม่ โดยไม่ต้องย้าย `index.html` ขึ้น root
 
 ---
 
@@ -133,14 +137,14 @@ npm run seed
 ## รันทดสอบในเครื่องตัวเอง (ก่อน Deploy จริง)
 
 ```bash
-cd server
-cp .env.example .env      # แล้วแก้ MONGODB_URI, JWT_SECRET
+cp server/.env.example server/.env  # แล้วแก้ MONGODB_URI, JWT_SECRET และ admin settings
 npm install
-npm start                 # เปิดที่ http://localhost:4000
+npm install --prefix client
+npm run dev               # เปิด frontend และ backend พร้อมกัน
 ```
 
-แล้วแก้ `client/config.js` ชั่วคราวเป็น `http://localhost:4000` จากนั้นเปิด `client/index.html`
-ด้วย Live Server หรือ `npx serve client` (เปิดตรง ๆ แบบ `file://` จะติด CORS/ไฟล์ปัญหาบางอย่าง แนะนำเปิดผ่าน local server เล็ก ๆ)
+ก่อนรัน ให้แก้ `client/config.js` ชั่วคราวเป็น `http://localhost:4000` จากนั้นเปิด frontend ที่ `http://localhost:5173`
+ถ้าต้องการรันแยก ใช้ `npm run dev:client` หรือ `npm run dev:server` ได้
 
 ---
 
