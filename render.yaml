@@ -1,0 +1,24 @@
+# Optional: Render "Blueprint" file. If you push this whole `server/` folder
+# to a GitHub repo and use Render > New > Blueprint, Render will read this
+# file and pre-fill most settings for you. You still need to fill in the
+# secret env vars (MONGODB_URI, JWT_SECRET, CORS_ORIGIN) in the Render dashboard.
+services:
+  - type: web
+    name: smart-work-calendar-2027-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: REGISTER_CODE
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
